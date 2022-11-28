@@ -50,25 +50,27 @@ class Dataset(object):
         number = label['NumOfAnno']
         output = []
         for i in range(number):
+            if label['Annotations'][i]['classname'] in ['scarf_banana', 'balaclava_ski_mask', 'turban', 'helmet', 'sunglasses', 'eyeglasses', 'hair_net', 'hat', 'goggles', 'hood']:
+                continue
             x, y, w, h = label['Annotations'][i]['BoundingBox']
             img_cropped = image[y:h, x:w, :]
             output.append(img_cropped)
         return output
 
-# example of how to use the Dataset
-dataset = Dataset()
-image, label, cropped_images = dataset[4313]
-plt.figure()
-plt.imshow(image)
-for i in range(len(cropped_images)):
-    plt.figure()
-    plt.imshow(cropped_images[i])
-
-for items in label['Annotations']:
-    print(items)
-# label[NumOfAnno] is the number of annotations
-# label[Annotations] is a list with dictionaries, containing 'BoundingBox' and 'isProtected'
-plt.show()
-
-# crop the image and get the faces
+# # example of how to use the Dataset
+# dataset = Dataset()
+# image, label, cropped_images = dataset[4313]
+# plt.figure()
+# plt.imshow(image)
+# for i in range(len(cropped_images)):
+#     plt.figure()
+#     plt.imshow(cropped_images[i])
+#
+# for items in label['Annotations']:
+#     print(items)
+# # label[NumOfAnno] is the number of annotations
+# # label[Annotations] is a list with dictionaries, containing 'BoundingBox' and 'isProtected'
+# plt.show()
+#
+# # crop the image and get the faces
 
