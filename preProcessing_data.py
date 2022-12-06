@@ -36,8 +36,9 @@ class preProcessing:
                                 image_norm = image_norm[0]
                             image_process.append(image_norm)
                             label_process.append(label['Annotations'][j]['isProtected'])
+        return image_process, label_process
 
-warnings.filterwarnings(("ignore"))
+#warnings.filterwarnings(("ignore"))
 dataset = Dataset()
 preProcessing.processing(dataset,256)
 print(1)
