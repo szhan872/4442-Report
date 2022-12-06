@@ -64,9 +64,9 @@ class Dataset(object):
         return output_image,output_label
 
 # # example of how to use the Dataset
-dataset = Dataset()
-image, label, cropped_images = dataset[1861]
-print(label)
+# dataset = Dataset()
+# image, label, cropped_images = dataset[1861]
+# print(label)
 # plt.figure()
 # plt.imshow(image)
 # for i in range(len(cropped_images)):

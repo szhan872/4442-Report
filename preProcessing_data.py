@@ -13,7 +13,7 @@ class preProcessing:
         #Resize each image with pic_size
         image_process = []
         label_process = []
-        for i in tqdm(range(1861,6435+1)):
+        for i in tqdm(range(1801,1805)):
             try:
                 image, label, cropped_images = dataset[i]
             except:
@@ -38,7 +38,7 @@ class preProcessing:
                             label_process.append(label['Annotations'][j]['isProtected'])
         return image_process, label_process
 
-#warnings.filterwarnings(("ignore"))
-dataset = Dataset()
-preProcessing.processing(dataset,256)
-print(1)
+# #warnings.filterwarnings(("ignore"))
+# dataset = Dataset()
+# preProcessing.processing(dataset,256)
+# print(1)
