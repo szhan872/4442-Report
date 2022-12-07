@@ -12,6 +12,7 @@ from tqdm import tqdm
 import cv2 as cv
 import numpy as np
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 import pickle
 from sklearn.model_selection import train_test_split
 
@@ -19,14 +20,14 @@ from sklearn.model_selection import train_test_split
 image_size = 224
 batch = 8
 num_epoch = 3
-learning_rate = 0.005
+learning_rate = 0.0001
 num_classes = 2
 
 # Device config
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 class AlexNet(nn.Module):
-    def __init__(self, num_classes=2):
+    def __init__(self):
         super(AlexNet, self).__init__()
         self.layer1 = nn.Sequential(
             nn.Conv2d(3, 96, kernel_size=11, stride=4, padding=0),
@@ -74,7 +75,7 @@ class AlexNet(nn.Module):
         out = self.fc2(out)
         return out
 
-model = AlexNet(num_classes).to(device)
+model = AlexNet().to(device)
 
 if(os.path.exists("image.pickle") and os.path.exists("label.pickle")):
     with open('image.pickle', 'rb') as handle:
@@ -92,8 +93,8 @@ else:
 # dataset = tf.data.Dataset.from_tensor_slices((image_process, label_process))
 
 transform = transforms.Compose([
-    transforms.ToTensor()
-    ,transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.2, 0.2, 0.2])
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.471, 0.48, 0.408], std=[0.234, 0.239, 0.242])
 ])
 
 
@@ -108,27 +109,25 @@ print("X_train shape: {}".format(len(X_train)))
 print("X_test shape: {}".format(len(X_test)))
 print("y_train shape: {}".format(len(y_train)))
 print("y_test shape: {}".format(len(y_test)))
-print("X_val shape: {}".format(len(y_train)))
-print("y val shape: {}".format(len(y_test)))
+print("X_val shape: {}".format(len(X_val)))
+print("y val shape: {}".format(len(y_val)))
 
 
 
 # Loss and optimizer
 criterion = nn.CrossEntropyLoss()
-optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate, weight_decay = 0.005, momentum = 0.9)
-
+# optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate, weight_decay = 0.005, momentum = 0.9)
+optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
 # Train the model
 total_step = len(X_train)
 
 for epoch in range(num_epoch):
     print("total lenth is ", len(X_train))
-    for i in range(len(X_train)):
-        print("running with", i)
+    for i in tqdm(range(len(X_train))):
+        # print("running with", i)
         # Convert images to tensor
         images = X_train[i]
-        if images == 123: # the cropped image is invalid
-            continue
         images = transform(images)
         # now image is tensor of image
 
@@ -141,7 +140,8 @@ for epoch in range(num_epoch):
         # Forward pass
         images_t = torch.unsqueeze(images, 0)
         outputs = model(images_t)
-
+        # _, indices = torch.sort(outputs, descending=True)
+        # print(indices)
         labels_t = torch.unsqueeze(labels, 0)
         loss = criterion(outputs, labels_t)
 
