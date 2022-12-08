@@ -29,15 +29,29 @@ class Dataset(object):
 
         else:
             image_name = str(id) + '.png'
-            image_path = os.path.join("../Medical mask/Medical mask/images/", image_name)
-            image = plt.imread(image_path)
-            label_name = image_name + ".json"
-            label_path = os.path.join("../Medical mask/Medical mask/annotations/", label_name)
-            label = open(label_path)
-            data = json.load(label) # data is a dictionary
-            cropped_images,cropped_label = self.crop(image, data)
+            if image_name in self.imgs:
+                image_path = os.path.join("../Medical mask/Medical mask/images/", image_name)
+                image = plt.imread(image_path)
+                label_name = image_name + ".json"
+                label_path = os.path.join("../Medical mask/Medical mask/annotations/", label_name)
+                label = open(label_path)
+                data = json.load(label) # data is a dictionary
+                cropped_images,cropped_label = self.crop(image, data)
+            else:
+                image_name = str(id) + '.jpeg'
+                image_path = os.path.join("../Medical mask/Medical mask/images/", image_name)
+                image = plt.imread(image_path)
+                label_name = image_name + ".json"
+                label_path = os.path.join("../Medical mask/Medical mask/annotations/", label_name)
+                label = open(label_path)
+                data = json.load(label) # data is a dictionary
+                cropped_images,cropped_label = self.crop(image, data)
 
-
+        if(isinstance(cropped_images[0][0][0][0], np.float32)):
+            for i in range(len(cropped_images)):
+                cropped_images[i] = (cropped_images[i] * 255).astype(int)
+        # print(cropped_images[0][0][0][0])
+        # print(type(cropped_images[0][0][0][0]))
         return image, cropped_label, cropped_images
 
     def crop(self, image, label: list) -> [list, list]:
@@ -54,7 +68,7 @@ class Dataset(object):
         output_label['Annotations'].clear()
         output_label['NumOfAnno'] = 0
         for i in range(number):
-            if label['Annotations'][i]['classname'] in ['scarf_banana', 'balaclava_ski_mask', 'turban', 'helmet', 'sunglasses', 'eyeglasses', 'hair_net', 'hat', 'goggles', 'hood','mask_colorful','mask_surgical']:
+            if label['Annotations'][i]['classname'] in ['scarf_banana', 'balaclava_ski_mask', 'turban', 'helmet', 'sunglasses', 'eyeglasses', 'hair_net', 'hat', 'goggles', 'hood','mask_colorful','mask_surgical','face_other_covering']:
                 continue
             x, y, w, h = label['Annotations'][i]['BoundingBox']
             img_cropped = image[y:h, x:w, :]

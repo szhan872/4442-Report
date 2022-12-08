@@ -21,7 +21,7 @@ class preProcessing:
         #Resize each image with pic_size
         image_process = []
         label_process = []
-        for i in tqdm(range(1801,2001)):
+        for i in tqdm(range(1801,6435+1)):
             try:
                 image, label, cropped_images = dataset[i]
             except:
@@ -53,9 +53,10 @@ class preProcessing:
                     for j in range(len(cropped_images)):
                         if(len(cropped_images[j]) != 0):       #Some images' crop only have 1 pixel, ignore them all
                             try:
-                                PIL_image = Image.fromarray(cropped_images[j])
+                                PIL_image = Image.fromarray(np.uint8(cropped_images[j]))
                                 image_resize = transform(PIL_image)
                             except:
+                                print(cropped_images[j])
                                 continue
 
                             # image_resize = tf.image.resize(cropped_images[j], [pic_size, pic_size])
@@ -72,5 +73,5 @@ class preProcessing:
 
 # #warnings.filterwarnings(("ignore"))
 # dataset = Dataset()
-# preProcessing.processing(dataset,256)
+# preProcessing.processing(dataset,224)
 # print(1)
