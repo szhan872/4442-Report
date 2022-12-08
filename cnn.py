@@ -20,7 +20,7 @@ from sklearn.model_selection import train_test_split
 image_size = 224
 batch = 8
 num_epoch = 10
-learning_rate = 0.00005
+learning_rate = 0.0001
 num_classes = 2
 
 # Device config
@@ -32,34 +32,34 @@ class AlexNet(nn.Module):
         self.layer1 = nn.Sequential(
             nn.Conv2d(3, 96, kernel_size=11, stride=4, padding=0),
             nn.BatchNorm2d(96),
-            nn.ReLU(),
+            nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size = 3, stride = 2))
         self.layer2 = nn.Sequential(
             nn.Conv2d(96, 256, kernel_size=5, stride=1, padding=2),
             nn.BatchNorm2d(256),
-            nn.ReLU(),
+            nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size = 3, stride = 2))
         self.layer3 = nn.Sequential(
             nn.Conv2d(256, 384, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(384),
-            nn.ReLU())
+            nn.ReLU(inplace=True))
         self.layer4 = nn.Sequential(
             nn.Conv2d(384, 384, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(384),
-            nn.ReLU())
+            nn.ReLU(inplace=True))
         self.layer5 = nn.Sequential(
             nn.Conv2d(384, 256, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(256),
-            nn.ReLU(),
+            nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size = 3, stride = 2))
         self.fc = nn.Sequential(
             nn.Dropout(0.5),
             nn.Linear(6400, 4096),
-            nn.ReLU())
+            nn.ReLU(inplace=True))
         self.fc1 = nn.Sequential(
             nn.Dropout(0.5),
             nn.Linear(4096, 4096),
-            nn.ReLU())
+            nn.ReLU(inplace=True))
         self.fc2= nn.Sequential(
             nn.Linear(4096, num_classes))
 
@@ -124,71 +124,72 @@ total_step = len(X_train)
 total_step_vali = len(X_val)
 loss_train = []
 loss_vali = []
-if(os.path.exists("CNNModel19")):
-    model = pickle.load(open("CNNModel1", 'rb'))
-    loss_train = pickle.load(open("train_loss9", 'rb'))
-    loss_vali = pickle.load(open("val_loss9", 'rb'))
-    print(loss_vali)
-# for epoch in range(num_epoch):
-#     print("total lenth is ", len(X_train))
-#     for i in tqdm(range(len(X_train))):
-#         # print("running with", i)
-#         # Convert images to tensor
-#         images = X_train[i]
-#         images = transform(images)
-#         # now image is tensor of image
-#
-#         labels = torch.tensor(int(y_train[i]))
-#
-#         # Move tensors to the configured device
-#         images = images.to(device)
-#         labels = labels.to(device)
-#
-#         # Forward pass
-#         images_t = torch.unsqueeze(images, 0)
-#         outputs = model(images_t)
-#         # _, indices = torch.sort(outputs, descending=True)
-#         # print(indices)
-#         labels_t = torch.unsqueeze(labels, 0)
-#         loss = criterion(outputs, labels_t)
-#         # Backward and optimize
-#         optimizer.zero_grad()
-#         loss.backward()
-#         optimizer.step()
-#     loss_train.append(loss.item())
-#     print ('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'
-#            .format(epoch+1, num_epoch, i+1, total_step, loss.item()))
-#
-#     # Validation
-#     with torch.no_grad():
-#         correct = 0
-#         total = 0
-#         for i in range(len(X_val)):
-#             # Convert images to tensor
-#             images = X_val[i]
-#             images = transform(images)
-#             # now image is tensor of image
-#
-#             labels = torch.tensor(int(y_val[i]))
-#
-#             images = images.to(device)
-#             labels = labels.to(device)
-#             images_t = torch.unsqueeze(images, 0)
-#             outputs = model(images_t)
-#             _, predicted = torch.max(outputs.data, 1)
-#             total += labels_t.size(0)
-#             loss = criterion(outputs, labels_t)
-#             correct += (predicted == labels_t).sum().item()
-#             del images, labels, outputs
-#         loss_vali.append(loss.item())
-#         print ('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'
-#            .format(epoch+1, num_epoch, i+1, total_step_vali, loss.item()))
-#
-#         print('Accuracy of the network on the {} validation images: {} %'.format(5000, 100 * correct / total))
-#     pickle.dump(model, open("CNNModel" + str(epoch), 'wb'))
-#
-#     pickle.dump(loss_train, open('train_loss' + str(epoch), 'wb'))
-#     pickle.dump(loss_vali, open('val_loss' + str(epoch), 'wb'))
+if(os.path.exists("CNNModel9")):
+    model = pickle.load(open("CNNModel9", 'rb'))
+    #loss_train = pickle.load(open("train_loss9", 'rb'))
+    #loss_vali = pickle.load(open("val_loss9", 'rb'))
+    #print(loss_vali)
+for epoch in range(num_epoch):
+    print("total lenth is ", len(X_train))
+    for i in tqdm(range(len(X_train))):
+        # print("running with", i)
+        # Convert images to tensor
+        images = X_train[i]
+        images = transform(images)
+        # now image is tensor of image
+
+        labels = torch.tensor(int(y_train[i]))
+
+        # Move tensors to the configured device
+        images = images.to(device)
+        labels = labels.to(device)
+
+        # Forward pass
+        images_t = torch.unsqueeze(images, 0)
+        outputs = model(images_t)
+        # _, indices = torch.sort(outputs, descending=True)
+        # print(indices)
+        labels_t = torch.unsqueeze(labels, 0)
+        loss = criterion(outputs, labels_t)
+        # Backward and optimize
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+    loss_train.append(loss.item())
+    print ('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'
+           .format(epoch+1, num_epoch, i+1, total_step, loss.item()))
+
+    # Validation
+    with torch.no_grad():
+        correct = 0
+        total = 0
+        for i in range(len(X_val)):
+            # Convert images to tensor
+            images = X_val[i]
+            images = transform(images)
+            # now image is tensor of image
+
+            labels = torch.tensor(int(y_val[i]))
+
+            images = images.to(device)
+            labels = labels.to(device)
+            labels_t = torch.unsqueeze(labels, 0)
+            images_t = torch.unsqueeze(images, 0)
+            outputs = model(images_t)
+            _, predicted = torch.max(outputs.data, 1)
+            total += labels_t.size(0)
+            loss = criterion(outputs, labels_t)
+            correct += (predicted == labels_t).sum().item()
+            del images, labels, outputs
+        loss_vali.append(loss.item())
+        print ('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'
+           .format(epoch+1, num_epoch, i+1, total_step_vali, loss.item()))
+
+        print('Accuracy of the network on the {} validation images: {} %'.format(5000, 100 * correct / total))
+    pickle.dump(model, open("CNNModel" + str(epoch), 'wb'))
+
+    pickle.dump(loss_train, open('train_loss' + str(epoch), 'wb'))
+    pickle.dump(loss_vali, open('val_loss' + str(epoch), 'wb'))
 plt.figure()
 plt.plot(list(range(1, num_epoch+1)),
          loss_train,
